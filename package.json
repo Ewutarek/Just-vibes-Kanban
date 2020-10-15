@@ -1,24 +1,31 @@
 {
-  "name": "just-vibes-kaban",
+  "name": "just-vibes-kanban",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "dependencies": {
+    "@handlebars/allow-prototype-access": "^1.0.3",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "handlebars": "^4.7.6",
+    "sequelize": "^6.3.5",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Ewutarek/Just-vibes-Kanban.git"
   },
-  "author": "kpheko",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Ewutarek/Just-vibes-Kanban/issues"
   },
-  "homepage": "https://github.com/Ewutarek/Just-vibes-Kanban#readme",
-  "dependencies": {
-    "express": "^4.17.1",
-    "sequelize": "^6.3.5",
-    "sqlite3": "^5.0.0"
-  }
+  "homepage": "https://github.com/Ewutarek/Just-vibes-Kanban#readme"
 }
