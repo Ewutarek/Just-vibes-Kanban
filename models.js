@@ -19,10 +19,10 @@ AdminTable.init({
 class Board extends Model {}
 Board.init({
     title: DataTypes.STRING,
-    tasks: DataTypes.STRING
+    image: DataTypes.STRING
 }, {sequelize})
 
-class Tasks extends Model {}
+class Task extends Model {}
 Tasks.init({
     text: DataTypes.STRING
 }, {sequelize})
@@ -30,27 +30,25 @@ Tasks.init({
 
 /*------------------Relationships-----------------------*/ 
 
-// AdminTable.hasMany(User, {as: 'users'})
-// User.belongsTo(AdminTable)
 
-Board.hasMany(AdminTable, {as: 'admins'})
+Board.hasMany(AdminTable, {as: 'admintables'})
 AdminTable.belongsTo(Board)
 
-User.hasMany(AdminTable, {as: 'admins'})
+User.hasMany(AdminTable, {as: 'admintables'})
 AdminTable.belongsTo(User)
 
 
-Board.hasMany(Tasks, {as:'tasks'})
-Tasks.belongsTo(Board)
+Board.hasMany(Task, {as:'tasks'})
+Task.belongsTo(Board)
 
 
-User.hasMany(Tasks, {as:'tasks'})
-Tasks.belongsTo(User)
+User.hasMany(Task, {as:'tasks'})
+Task.belongsTo(User)
 
 
 module.exports = {
     Board,
-    Tasks,
+    Task,
     AdminTable,
     User,
     sequelize
