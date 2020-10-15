@@ -23,7 +23,7 @@ Board.init({
 }, {sequelize})
 
 class Task extends Model {}
-Tasks.init({
+Task.init({
     text: DataTypes.STRING
 }, {sequelize})
 
