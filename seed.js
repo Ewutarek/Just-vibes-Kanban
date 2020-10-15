@@ -1,4 +1,4 @@
-const {sequelize, User, AdminTable, Board, Task} = require("./models")
+const {User, AdminTable, Board, Tasks, sequelize} = require("./models")
 
 //creating some default users 
 
@@ -84,7 +84,7 @@ sequelize.sync().then( () => {
     })
 
     const seeTasks = tasks.map(async (task) => {
-        const newTask = await Task.create({text: task.text, BoardId: task.board_id, UserId: task.user_id})
+        const newTask = await Tasks.create({text: task.text, BoardId: task.board_id, UserId: task.user_id})
     })
     
 })
