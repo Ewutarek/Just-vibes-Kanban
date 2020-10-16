@@ -6,17 +6,17 @@ const users = [
     {
         "id": 1,
         "username": "Keratuwe",
-        "avatar": ""
+        "avatar": "https://www.dogtime.com/assets/uploads/2011/03/puppy-development-1280x720.jpg"
     },
     {
         "id": 2,
         "username": "Kaye",
-        "avatar": ""
+        "avatar": "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg"
     },
     {
         "id": 3,
         "username": "Martha",
-        "avatar": ""
+        "avatar": "https://i.pinimg.com/originals/4a/d6/6e/4ad66eefeeac0da1821837bda5bab703.jpg"
     }
 ]
 
@@ -26,7 +26,7 @@ const boards = [
     {
         "id": 1,
         "title": "Just-Vibes",
-        "image": ""
+        "image": "https://static.wixstatic.com/media/b0d56a_6b627e45766d44fa8b2714f5d7860c84~mv2.jpg/v1/fill/w_1440,h_1008,al_c,q_85/b0d56a_6b627e45766d44fa8b2714f5d7860c84~mv2.jpg"
     }
 ]
 
