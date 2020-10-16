@@ -1,4 +1,5 @@
 const {Sequelize, Model, DataTypes} = require('sequelize')
+const Op = Sequelize.Op
 const path = require('path')
 const sequelize = process.env.NODE_ENV === 'test'
     ? new Sequelize('sqlite::memory:', null, null, {dialect: 'sqlite'})
@@ -51,5 +52,6 @@ module.exports = {
     Task,
     AdminTable,
     User,
-    sequelize
+    sequelize,
+    Op
 }
