@@ -1,0 +1,48 @@
+<header>
+    <h1>My Boards:</h1>
+</header>
+
+<!---Displays all the users boards--->
+
+<section>
+    {{#each boards}}
+        <article> 
+            <main>{{this.title}}</main>
+            <img src="{{this.image}}"/>
+        </article>
+    {{/each}}
+    <article onclick="openForm()">
+        <main>+</main>
+    </article>
+</section>
+
+<!---Create new board form--->
+
+<div id="myForm" style="display: none;">
+  <form action="/myBoards" method="POST">
+      <label>Title:</label>
+      <input type="text" name="title" required/>
+      <label>Background image:</label>
+      <input type="text" name="image" required/>
+      <select name="users" multiple="multiple">
+            {{#each users}}
+                <option value={{this.id}}>{{this.username}}</option>
+            {{/each}}
+      </select>
+      
+      <button type="submit">Add</button>
+      <button type="button" onclick="closeForm()">Cancel</button>
+  </form>
+</div>
+
+<!---Javascript handles form popping up--->
+
+<script> 
+    function openForm() {
+        document.getElementById("myForm").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("myForm").style.display = "none";
+    }
+</script>
