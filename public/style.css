@@ -116,3 +116,20 @@ h2 {
   a:hover {
     color: #ebd5c6;
   }
+
+/*styling drop down*/
+
+.dropDown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropDownContent {
+    display: none !important;
+    background-color: white;
+    position: absolute;
+}
+
+.dropDown:hover > .dropDownContent {
+    display: block !important;
+}
