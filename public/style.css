@@ -19,3 +19,7 @@ content{
 footer{
     grid-area: footer;
 }
+
+.form-popup{
+    display: none;
+}
