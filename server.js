@@ -5,11 +5,20 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const app = express()
 const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
-var loggedIndex;
+var loggedIndex = 1
+boards = []
+
 
 
 const handlebars = expressHandlebars({
-    handlebars: allowInsecurePrototypeAccess(Handlebars)
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
+    helpers: { 
+        exportBoards() {
+            //finds all a users boards 
+            return (boards)
+        }
+    },
+    partialsDir: __dirname + '/views/partials/'
 })
 
 app.use(express.static('public'))
@@ -52,6 +61,8 @@ app.post('/login', async (req, res) =>
         {
             res.redirect('/login-create');
         }
+    
+    await getBoards()
 })
 
 
@@ -133,4 +144,59 @@ app.get('/explore', async (req, res) =>
 app.listen(3000, async() => {
     await sequelize.sync()
     console.log('Web server is running')
+})
+
+//finds a users boards 
+
+getBoards = async () => {
+    const admin = await AdminTable.findAll({
+        where: {
+          UserId: loggedIndex
+        }
+      })
+    
+    boards = await Promise.all(admin.map(admin => Board.findByPk(admin.BoardId)))
+}
+
+
+
+//my boards page
+
+app.get('/myBoards', async (req, res) => {
+    const users = await User.findAll({
+        where: {
+            id: {
+                [Op.ne]: loggedIndex
+            }
+        }
+    })
+    
+    await getBoards()
+    
+
+    res.render('myBoards', {users, boards})
+})
+
+//create new board
+
+app.post('/myBoards', async (req, res) => {
+    const data = req.body
+    console.log(data)
+    const newBoard = await Board.create({title: data.title, image: data.image})
+    await AdminTable.create({UserId: loggedIndex, BoardId: newBoard.id})
+    
+    if (data.users == null) {
+        //do nothing
+    }
+    else if (data.users.length == 1) {
+        await AdminTable.create({UserId: data.users, BoardId: newBoard.id})
+
+    }
+    else {
+        (data.users).forEach(async (user) => {
+        await AdminTable.create({UserId: user, BoardId: newBoard.id})
+        })
+    }
+
+    res.redirect('/myBoards')
 })
