@@ -1,0 +1,13 @@
+ <h1>All Boards:</h1>
+
+    
+{{!-- Display ALL Boards --}}
+
+<section>
+    {{#each boards}}
+         <article> 
+            <main>{{this.title}}</main>
+            <img src="{{this.image}}" style="width:90px; height:90px;"/>
+        </article>
+    {{/each}}
+</section>
