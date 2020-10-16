@@ -4,18 +4,118 @@ body{
                          "content content content" 
                          "footer footer footer";
         
-    grid-template-rows: auto 1fr auto;                 
+    grid-template-rows: auto 1fr auto;
+    margin: 0;
+    min-height: 100vh; 
+    font-family: Arial, Helvetica, sans-serif;                 
 
 }
+
+body.home {
+    margin: 0;
+    background-image: url("https://images.unsplash.com/photo-1602255193974-cab401499521?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80");
+    background-position: right top;
+    background-repeat: no-repeat;
+    background-size: 50%;
+  }
+
+  body.home {
+    box-sizing: border-box;
+  }
+  
+  /* Create two equal columns that floats next to each other */
+  .column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+  }
+  
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 
 header{
     grid-area: header;
+    background-color: #ce796b;
+    font-family: 'Yellowtail';
+    text-align: center;
+    color: #ecc8af;
+    font-size: 3vw;
+    overflow: hidden;
+    position: fixed;
+    width: 100vw;
+    z-index: 2;
 }
 
+
 content{
+    margin: auto;
     grid-area: content;
+    padding-top: 100px;
 }
 
 footer{
     grid-area: footer;
+    padding: 10px;
 }
+
+h1 {
+    font-family: 'Montserrat';
+}
+
+h2 {
+    font-family: 'Montserrat';
+}
+
+/* landing page */
+
+.bg-text {
+    background-color: rgb(255, 255, 255); /* Fallback color */
+    background-color: rgba(255, 255, 255, 0.4); /* Black w/opacity/see-through */
+    color: #000;
+    font-size: 1vw;
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 90%;
+    padding: 20px;
+    text-align: center;
+}
+
+
+/* buttons */
+.button {
+    display: inline-block;
+    border: none;
+    outline: 0;
+    padding: 20px;
+    color: #ffffff;
+    background-color: #ce796b;
+    border-radius: 25px;
+    text-align: center;
+    cursor: pointer;
+    width: auto;
+    font-size: 1.5vw;
+    text-transform: capitalize;  }
+
+  .button:hover {
+    color: #ebd5c6;
+  }
+
+  /* links */
+  a:link, a:visited, a:active {
+    color: #ecc8af;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #ebd5c6;
+  }
+
+
+
