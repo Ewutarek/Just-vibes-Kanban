@@ -6,9 +6,12 @@ const app = express()
 const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
 var loggedIndex = 1
+var BoardIndex = 1
 boards = []
 user = []
-
+var notStarted = []
+var inProgress = []
+var done = []
 
 
 const handlebars = expressHandlebars({
@@ -28,7 +31,7 @@ app.set('view engine', 'handlebars')
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-//landing page
+/*---------------------------landing page---------------------------*/
 
 app.get('/', (req, res) => {
     res.render('landing', {layout : 'main'});
@@ -99,6 +102,30 @@ app.get('/explore', async (req, res) =>
     res.render('explore', {boards});
 })
 
+/*---------------------one Board (viewBoard)-----------------------*/ 
+getUsers = async () =>
+{
+    const admin = await AdminTable.findAll({
+        where: {
+          BoardId: BoardIndex
+        }
+      })
+    
+    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
+}
+
+app.get('/explore/:id', async (req, res) => 
+{
+    const board = await Board.findByPk(req.params.id).catch(console.error)
+    BoardIndex = board.id;
+    console.log("-----------------------Selected Board Index-------------",BoardIndex);
+    const admin = await AdminTable.findAll()
+    // const users = await User.findAll()
+
+    await getUsers();
+
+    res.render('viewBoard', {board, users});
+})
 
 /*---------------------app is listening on port 3000-----------------------*/
 app.listen(3000, async() => {
@@ -106,8 +133,7 @@ app.listen(3000, async() => {
     console.log('Web server is running')
 })
 
-//finds a users boards 
-
+/*----------------------------------finds a users boards ------------------------------*/
 getBoards = async () => {
     const admin = await AdminTable.findAll({
         where: {
@@ -120,8 +146,7 @@ getBoards = async () => {
 
 
 
-//my boards page
-
+/*----------------------------------------my boards page----------------------------------*/
 app.get('/myBoards', async (req, res) => {
     const users = await User.findAll({
         where: {
@@ -137,8 +162,9 @@ app.get('/myBoards', async (req, res) => {
     res.render('myBoards', {users, boards})
 })
 
-//create new board
 
+
+/*---------------------------create new board-----------------------------*/
 app.post('/myBoards', async (req, res) => {
     const data = req.body
     console.log(data)
@@ -161,6 +187,25 @@ app.post('/myBoards', async (req, res) => {
     res.redirect('/myBoards')
 })
 
+
+/*------------------------------------------viewBoard------------------------------------------*/
+
+app.get('/explore/:id', async (request, response) => {
+    const board = await Board.findByPk(request.params.id, {
+        include: [{model: Task, as: 'tasks'}],
+      
+      
+        board.tasks.forEach(task => {
+        if (task.status == -1) {
+            notStarted.push(task)
+        }
+        else if (task.status == 0) {
+            inProgress.push(task)
+        }
+    })
+   
+
+
 //get a boards users
 
 getUsers = async (BoardIndex) =>
@@ -174,9 +219,7 @@ getUsers = async (BoardIndex) =>
 }
 
 //edit board page 
-var notStarted = []
-var inProgress = []
-var done = []
+
 
 
 app.get('/editBoard/:id', async (request, response) => {
@@ -199,10 +242,15 @@ app.get('/editBoard/:id', async (request, response) => {
         else if (task.status == 0) {
             inProgress.push(task)
         } 
+
         else {
             done.push(task)
         }
     })
+
+    response.render('viewBoard', {board})
+})
+
 
     getUsers(request.params.id)
     
@@ -379,6 +427,7 @@ app.post('/editTask', async (req,res) => {
 
     res.send()
 })
+
 
 
 
