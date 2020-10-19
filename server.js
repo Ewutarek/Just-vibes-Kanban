@@ -193,16 +193,32 @@ app.post('/myBoards', async (req, res) => {
 app.get('/explore/:id', async (request, response) => {
     const board = await Board.findByPk(request.params.id, {
         include: [{model: Task, as: 'tasks'}],
-      
-      
-        board.tasks.forEach(task => {
+    })
+
+    board.tasks.sort(function(a, b){
+        return a.priority-b.priority
+    })
+
+    notStarted = []
+    inProgress = []
+    done = []
+    
+    board.tasks.forEach(task => {
         if (task.status == -1) {
             notStarted.push(task)
-        }
+        } 
         else if (task.status == 0) {
             inProgress.push(task)
+        } 
+
+        else {
+            done.push(task)
         }
     })
+
+    response.render('explore', {board})
+
+ })
    
 
 
@@ -248,14 +264,13 @@ app.get('/editBoard/:id', async (request, response) => {
         }
     })
 
-    response.render('viewBoard', {board})
-})
-
-
+    
     getUsers(request.params.id)
     
     response.render('editBoard', {board})
 })
+
+
 
 app.get('/users', (req, res) => {
     res.send(users)
