@@ -52,16 +52,22 @@ const admin = [
 const tasks = [
     {
         "text": "Make models.js",
+        "status": -1, 
+        "priority": 0,
         "board_id": 1,
         "user_id": 1
     },
     {
         "text": "Make server.js",
+        "status": 0,
+        "priority": 0,
         "board_id": 1,
         "user_id": 2
     },
     {
         "text": "Make seed.js",
+        "status": 1,
+        "priority": 0,
         "board_id": 1,
         "user_id": 3
     } 
@@ -84,7 +90,7 @@ sequelize.sync().then( () => {
     })
 
     const seedTasks = tasks.map(async (task) => {
-        const newTask = await Task.create({text: task.text, BoardId: task.board_id, UserId: task.user_id})
+        const newTask = await Task.create({text: task.text, status: task.status, priority: task.priority, BoardId: task.board_id, UserId: task.user_id})
     })
     
 })
