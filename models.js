@@ -25,7 +25,9 @@ Board.init({
 
 class Task extends Model {}
 Task.init({
-    text: DataTypes.STRING
+    text: DataTypes.STRING,
+    status: DataTypes.INTEGER,
+    priority: DataTypes.INTEGER
 }, {sequelize})
 
 
