@@ -1,0 +1,267 @@
+<section class="editBoardPage" ondragover="event.preventDefault()" ondrop="openPopUp('deletePopUp')"> 
+    <div>
+        <h1>{{board.title}}</h1>
+        <button>⚙️</button>
+        <div id="users"></div>
+    </div>
+    
+    <section class="listContainer">
+        <div id="toDoList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
+        </div>
+        <div id="inProgressList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
+        </div>
+        <div id="doneList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
+        </div>
+    </section>
+</section>
+
+<div id="deletePopUp" style="display: none;"> 
+<label>Would you like to delete this task?</label>
+<button onclick="deleteTask()">Yes</button>
+<button onclick="closePopUp('deletePopUp')">No</button>
+</div>
+
+<div id="editTaskPopUp" style="display: none;">
+
+</div>
+
+
+<script>
+    var notStarted = []
+    var inProgress = []
+    var done = []
+    var users = []
+    var taskId = null
+
+    async function showUsers() {
+        users = await fetch('/users').then(res => res.json())
+        document.getElementById("users").innerHTML = `
+            <h1>Collaborators:</h1>
+            ${users.map(user => `<p>${user.username}</p>`).join("")}
+        `
+    }
+
+    async function showLists() {
+        notStarted = await fetch('/notStarted').then(res => res.json())
+        inProgress = await fetch('/inProgress').then(res => res.json())
+        done = await fetch('/done').then(res => res.json())
+
+        document.getElementById("toDoList").innerHTML = `
+            <h1>To Do</h1>
+            ${notStarted.map(task => showTask(task)).join("")}
+            <aside class="task">
+                <div>
+                    <form onsubmit="addTask(event, this)">
+                        <input name="text" placeholder="Add Task" required/>
+                        <button>Add</button>
+                    <form>
+                </div>
+            </aside>
+        `
+        document.getElementById("inProgressList").innerHTML = `
+            <h1>In Progress</h1>
+            ${inProgress.map(task => showTask(task)).join("")}
+        `
+        document.getElementById("doneList").innerHTML = `
+            <h1>Done</h1>
+            ${done.map(task => showTask(task)).join("")}
+        `
+    }
+
+    showTask = (task => `
+        <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
+            <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
+                <label>${task.text}-${task.UserId}</label>
+                <button onclick="showEditTask(${task.id},'${task.text}')" >✏️</button>
+            </div> 
+            <br>
+        </aside>
+    `)
+
+    function onDragStart(event) {
+        taskId = event.target.id
+    }
+
+    async function addTask(event, form) {
+        event.preventDefault()
+        
+        const data = new FormData(form)
+        const text = data.get("text")
+        const task = {text: text}
+
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(task)
+        }
+
+        await fetch("/editBoard/{{board.id}}/addTask", postRequest)
+        
+        showLists()
+    }
+
+    async function moveTask(event, listIn) {
+        event.preventDefault()
+        event.stopPropagation()
+        const id = taskId
+
+        const index1 = notStarted.findIndex(task => task.id == id)
+        const index2 = inProgress.findIndex(task => task.id == id)
+        const index3 = done.findIndex(task => task.id == id)
+
+        
+        if (index1 > -1) {
+            listOut = -1
+        }
+        else if (index2 > -1) {
+            listOut = 0
+        }
+        else {
+            listOut = 1
+        }
+        
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([index1,index2,index3,listOut, listIn])
+        }
+
+        await fetch('/reorderTasks', postRequest)
+
+        showLists()
+    }
+
+    async function deleteTask() {
+        event.preventDefault()
+        const id = taskId
+
+        const index1 = notStarted.findIndex(task => task.id == id)
+        const index2 = inProgress.findIndex(task => task.id == id)
+        const index3 = done.findIndex(task => task.id == id)
+        
+        if (index1 > -1) {
+            list = -1
+        }
+        else if (index2 > -1) {
+            list = 0
+        }
+        else {
+            list = 1
+        }
+        
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([index1,index2,index3,list])
+        }
+
+        await fetch('/deleteTask', postRequest)
+        
+        closePopUp('deletePopUp')
+        closePopUp('editTaskPopUp')
+        showLists()
+    }
+
+    async function reorderTasks(event, listIn, priority) {
+        event.preventDefault()
+        event.stopPropagation()
+        const id = taskId
+
+        const index1 = notStarted.findIndex(task => task.id == id)
+        const index2 = inProgress.findIndex(task => task.id == id)
+        const index3 = done.findIndex(task => task.id == id)
+
+        
+        if (index1 > -1) {
+            listOut = -1
+        }
+        else if (index2 > -1) {
+            listOut = 0
+        }
+        else {
+            listOut = 1
+        }
+        
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([index1,index2,index3,listOut, listIn, priority])
+        }
+
+        await fetch('/reorderTasks', postRequest)
+
+        showLists()
+    }
+
+    function showEditTask (id,text) {
+        openPopUp("editTaskPopUp")
+        taskId = id
+        document.getElementById("editTaskPopUp").innerHTML = `
+            <form onsubmit="editTask(event, this)"> 
+                <label>Text:</label>
+                <input name="text" placeholder="${text}" />
+                <label>Assigned to:<label>
+                <select name="users">
+                    ${users.map(user => `<option value=${user.id}>${user.username}</option>`).join("")}
+                <select> 
+                <button>Submit</button>
+                <button type="button" onclick="deleteTask()" >Delete</button>
+                <button type="button" onclick="closePopUp('editTaskPopUp')" >Cancel</button>
+            </form>
+        `
+    }
+
+    async function editTask(event, form) {
+        event.preventDefault()
+        
+        const data = new FormData(form)
+        const id = taskId
+        const text = data.get("text")
+
+        const index1 = notStarted.findIndex(task => task.id == id)
+        const index2 = inProgress.findIndex(task => task.id == id)
+        const index3 = done.findIndex(task => task.id == id)
+        
+        if (index1 > -1) {
+            list = -1
+        }
+        else if (index2 > -1) {
+            list = 0
+        }
+        else {
+            list = 1
+        }
+        
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([index1,index2,index3,list,text])
+        }
+
+        await fetch('/editTask', postRequest)
+        closePopUp("editTaskPopUp")
+        showLists()
+    }
+
+    function openPopUp(popUpId) {
+        document.getElementById(popUpId).style.display = "block";
+    }
+
+    function closePopUp(popUpId) {
+        document.getElementById(popUpId).style.display = "none";
+    }
+
+    showUsers()   
+    showLists()
+</script>
+
