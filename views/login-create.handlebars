@@ -1,12 +1,10 @@
-<header>
     <h1>
         Login or Create New Account
     </h1>
-</header>
 
 <section>
 
-    <form class="login" action="/login-create" method="POST">
+    <form class="login" action="/login" method="POST">
          <label for="username">Username:</label>
          <input name="username" placeholder="Enter Username" required/>
          <button>Login</button>
@@ -15,7 +13,7 @@
     {{!-- Pop-Up Create Account form --}}
          <button class="open-button" onclick="openCreateUserForm()">Sign Up</button>
         <div class="form-popup" id="create-user">
-            <form class="form-container" onsubmit="formValidation()" action="/login-create" method="POST">
+            <form class="form-container" onsubmit="formValidation()" action="/signup" method="POST">
                 <input name="username" placeholder="Enter UserName" required/>
                 <input type="url" name="avatar" placeholder="Avatar url here" required/>
                 <button type="submit" class="btn">Create Account</button>

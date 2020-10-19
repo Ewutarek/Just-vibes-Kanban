@@ -91,47 +91,6 @@ app.post('/signup', async (req, res) =>
 })
 
 
-/*-----------------------my boards page--------------------------*/ 
-app.get('/myBoards', async (req, res) => {
-    const users = await User.findAll({
-        where: {
-            id: {
-                [Op.ne]: loggedIndex
-            }
-        }
-    })
-    
-    const admin = await AdminTable.findAll({
-        where: {
-          UserId: loggedIndex
-        }
-      })
-    
-    const boards = await Promise.all(admin.map(admin => Board.findByPk(admin.BoardId)))
-
-    res.render('myBoards', {users, boards})
-})
-
-/*-----------------------create new board--------------------------*/
-
-app.post('/myBoards', async (req, res) => {
-    const data = req.body
-    console.log(data)
-    const newBoard = await Board.create({title: data.title, image: data.image})
-    await AdminTable.create({UserId: loggedIndex, BoardId: newBoard.id})
-
-    if (data.users.length == 1) {
-        await AdminTable.create({UserId: data.users, BoardId: newBoard.id})
-
-    }
-    else {
-        (data.users).forEach(async (user) => {
-        await AdminTable.create({UserId: user, BoardId: newBoard.id})
-        })
-    }
-
-    res.redirect('/myBoards')
-})
 
 /*---------------------All Boards (Explore)-----------------------*/
 app.get('/explore', async (req, res) => 
