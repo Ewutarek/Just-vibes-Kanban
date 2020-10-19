@@ -45,7 +45,6 @@
         <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
             <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
                 <label>${task.text}</label>
-                <button onclick="showEditTask(${task.id},'${task.text}')" >:pencil2:</button>
             </div>
             <br>
         </aside>
