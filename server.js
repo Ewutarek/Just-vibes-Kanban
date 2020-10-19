@@ -7,6 +7,7 @@ const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
 var loggedIndex = 1
 boards = []
+user = []
 
 
 
@@ -200,3 +201,225 @@ app.post('/myBoards', async (req, res) => {
 
     res.redirect('/myBoards')
 })
+
+//get a boards users
+
+getUsers = async (BoardIndex) =>
+{
+    const admin = await AdminTable.findAll({
+        where: {
+          BoardId: BoardIndex
+        }
+      })
+    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
+}
+
+//edit board page 
+var notStarted = []
+var inProgress = []
+var done = []
+
+
+app.get('/editBoard/:id', async (request, response) => {
+    const board = await Board.findByPk(request.params.id, {
+        include: [{model: Task, as: 'tasks'}],
+    })
+
+    board.tasks.sort(function(a, b){
+        return a.priority-b.priority
+    })
+
+    notStarted = []
+    inProgress = []
+    done = []
+    
+    board.tasks.forEach(task => {
+        if (task.status == -1) {
+            notStarted.push(task)
+        } 
+        else if (task.status == 0) {
+            inProgress.push(task)
+        } 
+        else {
+            done.push(task)
+        }
+    })
+
+    getUsers(request.params.id)
+    
+    response.render('editBoard', {board})
+})
+
+app.get('/users', (req, res) => {
+    res.send(users)
+})
+
+app.get('/notStarted', (req, res) => {
+    res.send(notStarted)
+})
+
+app.get('/inProgress', (req, res) => {
+    res.send(inProgress)
+})
+
+app.get('/done', (req, res) => {
+    res.send(done)
+})
+
+//add task
+
+app.post('/editBoard/:id/addTask', async (req,res) => {
+    task = await Task.create({text: req.body.text, BoardId: req.params.id, status: -1, priority: notStarted.length})
+    notStarted.push(task)
+    res.send()
+})
+
+//move task 
+
+app.post('/moveTask', async (req,res) => {
+    const index1 = req.body[0]
+    const index2 = req.body[1]
+    const index3 = req.body[2]
+    const listOut = req.body[3]
+    const listIn = req.body[4]
+
+    if (listOut == -1) {
+        task = notStarted[index1]
+        notStarted.splice(index1, 1)
+    }
+    else if (listOut == 0) {
+        task = inProgress[index2]
+        inProgress.splice(index2, 1)
+    }
+    else {
+        task = done[index3]
+        done.splice(index3, 1)
+    }
+
+
+    if (listIn == -1) {
+        await task.update({status: -1, priority: notStarted.length})
+        notStarted.push(task)
+    }
+    else if (listIn == 0) {
+        await task.update({status: 0, priority: inProgress.length})
+        inProgress.push(task)
+    }
+    else {
+        await task.update({status: 1, priority: done.length})
+        done.push(task)
+    }
+
+    res.send()
+})
+
+//delete task 
+
+app.post('/deleteTask', async (req,res) => {
+    const index1 = req.body[0]
+    const index2 = req.body[1]
+    const index3 = req.body[2]
+    const list = req.body[3]
+
+    if (list == -1) {
+        task = notStarted[index1]
+        notStarted.splice(index1, 1)
+    }
+    else if (list == 0) {
+        task = inProgress[index2]
+        inProgress.splice(index2, 1)
+    }
+    else {
+        task = done[index3]
+        done.splice(index3, 1)
+    }
+
+    await task.destroy()
+    res.send()
+})
+
+//redorder tasks
+
+app.post('/reorderTasks', async (req,res) => {
+    const index1 = req.body[0]
+    const index2 = req.body[1]
+    const index3 = req.body[2]
+    const listOut = req.body[3]
+    const listIn = req.body[4]
+    const priority = req.body[5]
+
+    if (listOut == -1) {
+        task = notStarted[index1]
+        notStarted.splice(index1, 1)
+    }
+    else if (listOut == 0) {
+        task = inProgress[index2]
+        inProgress.splice(index2, 1)
+    }
+    else {
+        task = done[index3]
+        done.splice(index3, 1)
+    }
+
+    
+
+    if (listIn == -1) {
+        await task.update({status: -1})
+        notStarted.splice(priority, 0, task)
+
+        await Promise.all(notStarted.map(item => {
+            newPriority = notStarted.indexOf(item)
+            return item.update({priority: newPriority})
+        }))
+
+        
+    }
+    else if (listIn == 0) {
+        await task.update({status: 0})
+        inProgress.splice(priority, 0, task)
+
+        await Promise.all(inProgress.map(item => {
+            newPriority = inProgress.indexOf(item)
+            return item.update({priority: newPriority})
+        }))
+    }
+    else {
+        await task.update({status: 1})
+        done.splice(priority, 0, task)
+        
+        await Promise.all(done.map(item => {
+            newPriority = done.indexOf(item)
+            return item.update({priority: newPriority})
+        }))
+    }
+
+    res.send()
+})
+
+//edit task 
+
+app.post('/editTask', async (req,res) => {
+    const index1 = req.body[0]
+    const index2 = req.body[1]
+    const index3 = req.body[2]
+    const list = req.body[3]
+    const text = req.body[4]
+
+    if (list == -1) {
+        task = notStarted[index1]
+        await task.update({text: text})
+    }
+    else if (list == 0) {
+        task = inProgress[index2]
+        await task.update({text: text})
+    }
+    else {
+        task = done[index3]
+        await task.update({text: text})
+    }
+
+    res.send()
+})
+
+
+
