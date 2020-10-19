@@ -1,0 +1,57 @@
+<h1> 
+    {{board.title}}
+</h1>
+
+<section>
+    {{#each users}}
+          <img src="{{this.avatar}}" alt="{{this.username}}" style="border: 1px solid #555; border-radius: 50%; width:80px; height:80px;">
+    {{/each}}
+</section>
+
+<section class="listContainer">
+    <div id="toDoList" class="list" >
+    </div>
+    <div id="inProgressList" class="list" >
+    </div>
+    <div id="doneList" class="list">
+    </div>
+</section>
+
+
+<script>
+   async function showLists() {
+        notStarted = await fetch('/notStarted').then(res => res.json());
+        inProgress = await fetch('/inProgress').then(res => res.json());
+        done = await fetch('/done').then(res => res.json());
+        
+        document.getElementById("toDoList").innerHTML = `
+            <h1>To Do</h1>
+            ${notStarted.map(task => showTask(task)).join("")}
+            <aside class="task">
+                <div>
+                </div>
+            </aside>
+        `
+        document.getElementById("inProgressList").innerHTML = `
+            <h1>In Progress</h1>
+            ${inProgress.map(task => showTask(task)).join("")}
+        `
+        document.getElementById("doneList").innerHTML = `
+            <h1>Done</h1>
+            ${done.map(task => showTask(task)).join("")}
+        `
+    }
+    showTask = (task => `
+        <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
+            <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
+                <label>${task.text}</label>
+                <button onclick="showEditTask(${task.id},'${task.text}')" >:pencil2:</button>
+            </div>
+            <br>
+        </aside>
+    `) 
+
+    showLists();
+
+</script>
+
