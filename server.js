@@ -189,7 +189,7 @@ app.post('/myBoards', async (req, res) => {
 
 
 
-//get a boards users
+/*--------------------------------get a boards users----------------------------------*/
 
 getUsers = async (BoardIndex) =>
 {
@@ -201,10 +201,7 @@ getUsers = async (BoardIndex) =>
     users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
 }
 
-//edit board page 
-
-
-
+/*-----------------------------------edit board page ----------------------------*/
 app.get('/editBoard/:id', async (request, response) => {
     const board = await Board.findByPk(request.params.id, {
         include: [{model: Task, as: 'tasks'}],
@@ -255,16 +252,15 @@ app.get('/done', (req, res) => {
     res.send(done)
 })
 
-//add task
 
+/*-------------------------------------add task-----------------------------------*/
 app.post('/editBoard/:id/addTask', async (req,res) => {
     task = await Task.create({text: req.body.text, BoardId: req.params.id, status: -1, priority: notStarted.length})
     notStarted.push(task)
     res.send()
 })
 
-//move task 
-
+/*--------------------------------move task --------------------------------*/
 app.post('/moveTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -302,8 +298,7 @@ app.post('/moveTask', async (req,res) => {
     res.send()
 })
 
-//delete task 
-
+/*-----------------------------delete task--------------------------*/
 app.post('/deleteTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -327,8 +322,7 @@ app.post('/deleteTask', async (req,res) => {
     res.send()
 })
 
-//redorder tasks
-
+/*-----------------------------------redorder tasks--------------------------------*/
 app.post('/reorderTasks', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -386,7 +380,6 @@ app.post('/reorderTasks', async (req,res) => {
 })
 
 /*----------------------------------edit task ---------------------------*/
-
 app.post('/editTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
