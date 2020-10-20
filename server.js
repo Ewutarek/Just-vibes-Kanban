@@ -24,13 +24,13 @@ app.use(express.json())
 /*---------------------------landing page---------------------------*/
 
 app.get('/', (req, res) => {
-    res.render('landing', {layout : 'main'});
+    res.render('landing', {layout : 'mainlanding'});
     })
 
 /*-----------------------Login-Create Render----------------------*/
 app.get('/login-create', (req, res) => 
 {
-    res.render('login-create', {layout : 'main'});
+    res.render('login-create', {layout : 'mainlanding'});
 })
 
   
@@ -84,6 +84,13 @@ app.post('/signup', async (req, res) =>
     res.redirect('/login-create')
 })
 
+
+/*------------------------------logout----------------------------------- */ 
+app.get('/logout', async (req, res) => 
+{
+    loggedIndex = null;
+   res.redirect('/')
+})
 
 
 /*---------------------All Boards (Explore)-----------------------*/
@@ -459,6 +466,7 @@ app.post('/editTask', async (req,res) => {
 
     res.send()
 })
+
 
 //edit board 
 
