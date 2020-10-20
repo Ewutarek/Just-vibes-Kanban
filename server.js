@@ -1,42 +1,21 @@
 const express = require('express')
+const session = require('express-session')
 const Handlebars = require('handlebars')
 const expressHandlebars = require('express-handlebars')
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
 const app = express()
 const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
-var loggedIndex = 1
-var BoardIndex = 1
-var user = null
-boards = []
-user = []
-var notStarted = []
-var inProgress = []
-var done = []
-var otherUsers = []
 
 
 const handlebars = expressHandlebars({
     handlebars: allowInsecurePrototypeAccess(Handlebars),
-    helpers: { 
-        exportBoards:() => {
-            //finds all a users boards 
-            return (boards)
-        },
-        getLoggedUser: function(){
-            return (user.username)
-
-        },
-        getLoggedAvatar: function(){
-            var avatar = user.avatar
-            return (avatar)
-
-        }
-    },
     partialsDir: __dirname + '/views/partials/'
 })
 
-app.use(express.static('public'))
+app.use(express.static('public'), session({
+    'secret': '343ji43j4n3jn4jk3n'
+  }))
 app.engine('handlebars', handlebars)
 app.set('view engine', 'handlebars')
 app.use(express.urlencoded({ extended: true }))
@@ -66,8 +45,9 @@ app.post('/login', async (req, res) =>
             if(_user.username == req.body.username)
             {
                 isFound = true;
-                loggedIndex = _user.id;
-                user = _user
+                req.session.userId = _user.id;
+                req.session.user = _user
+                req.session.maxAge = 365 * 24 * 60 * 60 * 1000;
                 res.redirect('/myBoards')
             } 
         })
@@ -117,112 +97,17 @@ app.get('/logout', async (req, res) =>
 app.get('/explore', async (req, res) => 
 {
     const boards = await Board.findAll()
-    res.render('explore', {boards});
+    thisSession = req.session 
+
+
+    res.render('explore', {boards, thisSession});
 })
 
 /*---------------------one Board (viewBoard)-----------------------*/ 
-getUsers = async (BoardIndex) =>
-{
-    const admin = await AdminTable.findAll({
-        where: {
-          BoardId: BoardIndex
-        }
-      })
-    
-    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
-}
 
 app.get('/viewBoard/:id', async (req, res) => 
 {
-    const board = await Board.findByPk(req.params.id).catch(console.error)
-    BoardIndex = board.id;
-    console.log("-----------------------Selected Board Index-------------",BoardIndex);
-    const admin = await AdminTable.findAll()
-    
-    await getUsers(req.params.id);
-
-    res.render('viewBoard', {board, users});
-})
-
-/*---------------------app is listening on port 3000-----------------------*/
-app.listen(3000, async() => {
-    await sequelize.sync()
-    console.log('Web server is running')
-})
-
-/*----------------------------------finds a users boards ------------------------------*/
-getBoards = async () => {
-    const admin = await AdminTable.findAll({
-        where: {
-          UserId: loggedIndex
-        }
-      })
-    
-    boards = await Promise.all(admin.map(admin => Board.findByPk(admin.BoardId)))
-}
-
-
-
-/*----------------------------------------my boards page----------------------------------*/
-app.get('/myBoards', async (req, res) => {
-    const users = await User.findAll({
-        where: {
-            id: {
-                [Op.ne]: loggedIndex
-            }
-        }
-    })
-    
-    await getBoards()
-    
-
-    res.render('myBoards', {users, boards})
-})
-
-
-
-/*---------------------------create new board-----------------------------*/
-app.post('/myBoards', async (req, res) => {
-    const data = req.body
-    console.log(data)
-    const newBoard = await Board.create({title: data.title, image: data.image})
-    await AdminTable.create({UserId: loggedIndex, BoardId: newBoard.id})
-    
-    if (data.users == null) {
-        //do nothing
-    }
-    else if (data.users.length == 1) {
-        await AdminTable.create({UserId: data.users, BoardId: newBoard.id})
-
-    }
-    else {
-        (data.users).forEach(async (user) => {
-        await AdminTable.create({UserId: user, BoardId: newBoard.id})
-        })
-    }
-
-    res.redirect('/myBoards')
-})
-
-
-
-/*--------------------------------get a boards users----------------------------------*/
-
-getUsers = async (BoardIndex) =>
-{
-    const admin = await AdminTable.findAll({
-        where: {
-          BoardId: BoardIndex
-        }
-      })
-    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
-}
-
-
-/*-----------------------------------edit board page ----------------------------*/
-
-app.get('/editBoard/:id', async (request, response) => {
-    const board = await Board.findByPk(request.params.id, {
+    const board = await Board.findByPk(req.params.id, {
         include: [{model: Task, as: 'tasks'}],
     })
 
@@ -247,55 +132,173 @@ app.get('/editBoard/:id', async (request, response) => {
         }
     })
 
+    req.session.notStarted = notStarted
+    req.session.inProgress = inProgress
+    req.session.done = done
+
+    //finding users on board 
+    const admin = await AdminTable.findAll({
+        where: {
+          BoardId: req.params.id
+        }
+      })
     
-    getUsers(request.params.id)
-    getOtherUsers(request.params.id)
-    
-    response.render('editBoard', {board})
+    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
+    req.session.users = users
+    thisSession = req.session 
+
+    res.render('viewBoard', {board, users, thisSession});
 })
 
-getOtherUsers = async (BoardIndex) =>
-{
+/*---------------------app is listening on port 3000-----------------------*/
+app.listen(3000, async() => {
+    await sequelize.sync()
+    console.log('Web server is running')
+})
+
+/*----------------------------------finds a users boards ------------------------------*/
+   
+
+
+
+/*----------------------------------------my boards page----------------------------------*/
+app.get('/myBoards', async (req, res) => {
+    const users = await User.findAll({
+        where: {
+            id: {
+                [Op.ne]: req.session.userId
+            }
+        }
+    })
+    
+     const admin = await AdminTable.findAll({
+        where: {
+          UserId: req.session.userId
+        }
+      })
+    
+    req.session.boards = await Promise.all(admin.map(admin => Board.findByPk(admin.BoardId)))
+    
+    boards= req.session.boards
+    req.session.boards = boards
+    thisSession = req.session 
+
+
+    res.render('myBoards', {users, boards, thisSession})
+})
+
+
+
+/*---------------------------create new board-----------------------------*/
+app.post('/myBoards', async (req, res) => {
+    const data = req.body
+    console.log(data)
+    const newBoard = await Board.create({title: data.title, image: data.image})
+    await AdminTable.create({UserId: req.session.userId, BoardId: newBoard.id})
+    
+    if (data.users == null) {
+        //do nothing
+    }
+    else if (data.users.length == 1) {
+        await AdminTable.create({UserId: data.users, BoardId: newBoard.id})
+
+    }
+    else {
+        (data.users).forEach(async (user) => {
+        await AdminTable.create({UserId: user, BoardId: newBoard.id})
+        })
+    }
+
+    res.redirect('/myBoards')
+})
+
+
+/*-----------------------------------edit board page ----------------------------*/
+
+app.get('/editBoard/:id', async (req, res) => {
+    const board = await Board.findByPk(req.params.id, {
+        include: [{model: Task, as: 'tasks'}],
+    })
+
+    board.tasks.sort(function(a, b){
+        return a.priority-b.priority
+    })
+
+    notStarted = []
+    inProgress = []
+    done = []
+    
+    board.tasks.forEach(task => {
+        if (task.status == -1) {
+            notStarted.push(task)
+        } 
+        else if (task.status == 0) {
+            inProgress.push(task)
+        } 
+
+        else {
+            done.push(task)
+        }
+    })
+
+    req.session.notStarted = notStarted
+    req.session.inProgress = inProgress
+    req.session.done = done
+
+    //finding users on board 
+    const admin = await AdminTable.findAll({
+        where: {
+          BoardId: req.params.id
+        }
+      })
+    
+    users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
+    req.session.users = users
+
+    //finding users not on board
     const allUsers = await User.findAll()
     const adminTables = await AdminTable.findAll()
 
     adminTables.forEach(row => {
-        if (row.BoardId == BoardIndex) {
+        if (row.BoardId == req.params.id) {
             index = allUsers.findIndex(user => user.id == row.UserId)
             allUsers.splice(index,1)
         }
     })
     
-    otherUsers = allUsers
-      
-}
+    req.session.otherUsers = allUsers
+    thisSession = req.session 
+    
+    res.render('editBoard', {board, thisSession})
+})
+
+
 
 app.get('/users', (req, res) => {
-    res.send(users)
+    res.send(req.session.users)
 })
 
 app.get('/otherUsers', (req,res) => {
-    res.send(otherUsers)
+    res.send(req.session.otherUsers)
 })
 
-
-app.get('/notStarted', (req, res) => {
-    res.send(notStarted)
+app.get('/notStarted', async (req, res) => {
+    res.send(req.session.notStarted)
 })
 
 app.get('/inProgress', (req, res) => {
-    res.send(inProgress)
+    res.send(req.session.inProgress)
 })
 
 app.get('/done', (req, res) => {
-    res.send(done)
+    res.send(req.session.done)
 })
 
 
 /*-------------------------------------add task-----------------------------------*/
 app.post('/editBoard/:id/addTask', async (req,res) => {
     task = await Task.create({text: req.body.text, BoardId: req.params.id, status: -1, priority: notStarted.length})
-    notStarted.push(task)
+    req.session.notStarted.push(task)
     res.send()
 })
 
@@ -308,30 +311,33 @@ app.post('/moveTask', async (req,res) => {
     const listIn = req.body[4]
 
     if (listOut == -1) {
-        task = notStarted[index1]
-        notStarted.splice(index1, 1)
+        task = req.session.notStarted[index1]
+        req.session.notStarted.splice(index1, 1)
     }
     else if (listOut == 0) {
-        task = inProgress[index2]
-        inProgress.splice(index2, 1)
+        task = req.session.inProgress[index2]
+        req.session.inProgress.splice(index2, 1)
     }
     else {
-        task = done[index3]
-        done.splice(index3, 1)
+        task = req.session.done[index3]
+        req.session.done.splice(index3, 1)
     }
+
+
+    dbTask = await Task.findByPk(task.id)
 
 
     if (listIn == -1) {
-        await task.update({status: -1, priority: notStarted.length})
-        notStarted.push(task)
+        await dbTask.update({status: -1, priority: notStarted.length})
+        req.session.notStarted.push(dbTask)
     }
     else if (listIn == 0) {
-        await task.update({status: 0, priority: inProgress.length})
-        inProgress.push(task)
+        await dbTask.update({status: 0, priority: inProgress.length})
+        req.session.inProgress.push(dbTask)
     }
     else {
-        await task.update({status: 1, priority: done.length})
-        done.push(task)
+        await dbTask.update({status: 1, priority: done.length})
+        req.session.done.push(dbTask)
     }
 
     res.send()
@@ -345,19 +351,20 @@ app.post('/deleteTask', async (req,res) => {
     const list = req.body[3]
 
     if (list == -1) {
-        task = notStarted[index1]
-        notStarted.splice(index1, 1)
+        task = req.session.notStarted[index1]
+        req.session.notStarted.splice(index1, 1)
     }
     else if (list == 0) {
-        task = inProgress[index2]
-        inProgress.splice(index2, 1)
+        task = req.session.inProgress[index2]
+        req.session.inProgress.splice(index2, 1)
     }
     else {
-        task = done[index3]
-        done.splice(index3, 1)
+        task = req.session.done[index3]
+        req.session.done.splice(index3, 1)
     }
 
-    await task.destroy()
+    dbTask = await Task.findByPk(task.id)
+    await dbTask.destroy()
     res.send()
 })
 
@@ -369,6 +376,10 @@ app.post('/reorderTasks', async (req,res) => {
     const listOut = req.body[3]
     const listIn = req.body[4]
     const priority = req.body[5]
+
+    notStarted = await Promise.all(req.session.notStarted.map(task => Task.findByPk(task.id)))
+    inProgress = await Promise.all(req.session.inProgress.map(task => Task.findByPk(task.id)))
+    done = await Promise.all(req.session.done.map(task => Task.findByPk(task.id)))
 
     if (listOut == -1) {
         task = notStarted[index1]
@@ -415,6 +426,10 @@ app.post('/reorderTasks', async (req,res) => {
         }))
     }
 
+    req.session.notStarted = notStarted
+    req.session.inProgress = inProgress
+    req.session.done = done
+
     res.send()
 })
 
@@ -425,20 +440,28 @@ app.post('/editTask', async (req,res) => {
     const index3 = req.body[2]
     const list = req.body[3]
     const text = req.body[4]
-    const asignee = req.body[5]
+    const assignee = req.body[5]
 
     if (list == -1) {
-        task = notStarted[index1]
-        await task.update({text: text, UserId: asignee})
+        task = req.session.notStarted[index1]
+        task.text = text
+        task.UserId = assignee
+        dbTask = await Task.findByPk(task.id)
+        await dbTask.update({text: text, UserId: assignee})
     }
     else if (list == 0) {
-        task = inProgress[index2]
-        await task.update({text: text, UserId: asignee})
+        task = req.session.inProgress[index2]
+        task.text = text
+        task.UserId = assignee
+        dbTask = await Task.findByPk(task.id)
+        await dbTask.update({text: text, UserId: assignee})
     }
     else {
-        task = done[index3]
-        await task.update({text: text, UserId: asignee})
-
+        task = req.session.done[index3]
+        task.text = text
+        task.UserId = assignee
+        dbTask = await Task.findByPk(task.id)
+        await dbTask.update({text: text, UserId: assignee})
     }
 
     res.send()
