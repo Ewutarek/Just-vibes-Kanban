@@ -120,8 +120,7 @@ app.get('/viewBoard/:id', async (req, res) =>
     BoardIndex = board.id;
     console.log("-----------------------Selected Board Index-------------",BoardIndex);
     const admin = await AdminTable.findAll()
-    // const users = await User.findAll()
-
+    
     await getUsers(req.params.id);
 
     res.render('viewBoard', {board, users});
