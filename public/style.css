@@ -44,7 +44,7 @@ body.home {
 
 nav{
   display: flex;
-  width: 100%;
+  width: 85%;
   height: 20%;
   align-items: center;
   justify-content: flex-end;
@@ -62,17 +62,12 @@ a{
   font-family: 'Yellowtail';
   font-size: 3vw;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-self: center;
+  justify-content: space-between;
 }
 
-#logolanding{
-  font-family: 'Yellowtail';
-  font-size: 3vw;
- text-align: center;
-}
 #user{
-  padding-left: 20px;
+  padding-left: 10px;
   padding-top: 6px;
   display: flex;
 
@@ -104,9 +99,6 @@ header{
   z-index: 2;
 }
 
-
-
-
 content{
   margin: auto;
   grid-area: content;
@@ -132,11 +124,24 @@ h3 {
   color: black;
   font-size: 30px;
 }
+
 h4 {
   font-family: 'Montserrat';
   text-transform: capitalize;
   color: white;
   font-size: 30px;
+}
+
+/* landing page logo */
+h5 {
+  font-family: 'Yellowtail';
+  text-transform: capitalize;
+  color:#ce796b;
+  font-size: 4.5vw;
+  text-shadow: 1px 1px 2px white, 0 0 25px white, 0 0 5px white;
+  position: relative;
+  z-index: 2;
+
 }
 /* landing page */
 
@@ -192,7 +197,7 @@ h4 {
   border-radius: 25px;
   text-align: center;
   cursor: pointer;
-  width: auto;
+  max-width: 200px;
   font-size: 1vw;
   text-transform: capitalize;  
 }
@@ -207,7 +212,7 @@ h4 {
   border: none;
   padding: 5px;
   color: #ffffff;
-  background-color: #ebd5c6;
+  background-color: #b66b60;
   vertical-align: middle;
   border-radius: 10px;
   cursor: pointer;
@@ -242,7 +247,7 @@ a:hover {
   color: #ebd5c6;
 }
 
-a.board:link, a.rest:visited, a.rest:hover  {
+a.board:link, a.board:visited, a.board:hover  {
   color:#000000;
 }
 
@@ -254,7 +259,7 @@ a.board:link, a.rest:visited, a.rest:hover  {
 }
 
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
   margin: auto;
   text-align: center;
 }
@@ -264,8 +269,9 @@ a.board:link, a.rest:visited, a.rest:hover  {
   display: block;
   height: auto;
   transition: .5s ease;
+  border-radius: 20px;
   backface-visibility: hidden;
-  width:  80vh;
+  width:  90vh;
   height: 30vh;
   background-position: center;
   background-size: cover;
@@ -291,10 +297,11 @@ a.board:link, a.rest:visited, a.rest:hover  {
 }
 
 .text {
-  color: #000;
+  color: #000000;
   font-size: 16px;
   padding: 16px 32px;
 }
+
 
 /*styling editBoard page*/
 .editBoardPage {
@@ -315,14 +322,14 @@ a.board:link, a.rest:visited, a.rest:hover  {
   padding: 2rem;
 }
 .listInProgress {
-  background-color: #e28576;
+  background-color: #eb8a7c;
   text-align: center;
   min-height: 20rem;
   width: 20rem;
   padding: 2rem;
 }
 .listDone {
-  background-color: #ff8f7e;
+  background-color: #f0a296;
   text-align: center;
   min-height: 20rem;
   width: 20rem;
@@ -342,4 +349,57 @@ a.board:link, a.rest:visited, a.rest:hover  {
   background-color: white;
   border-radius: 20px;
   padding: 0.5rem;
+}
+/* user avatar display */
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
+  width: 30%;
+  background-color: #ffffff;
+  padding: 10px;
+}
+
+.grid-item {
+  background-color: #b66b60;
+  border: white 2px solid;
+  border-radius: 20px;
+  width: auto;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+/*  pop up */
+
+
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
 }

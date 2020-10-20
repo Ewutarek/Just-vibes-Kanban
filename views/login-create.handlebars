@@ -1,3 +1,6 @@
+   <body class="home">
+<div class="bg-text">
+
     <h1>
         Login or Create New Account
     </h1>
@@ -7,23 +10,27 @@
     <form class="login" action="/login" method="POST">
          <input name="username" placeholder="Enter Username" required/>
          <button class="button">Login</button>
+          <p class="login-alert"  style="color: red;">{{loginMsg}}</p>
     </form>
 
     {{!-- Pop-Up Create Account form --}}
+    <center>
+
          <button class="open-button button" onclick="openCreateUserForm()">Sign Up Here</button>
         <div class="form-popup" id="create-user">
             <form class="form-container" onsubmit="formValidation()" action="/signup" method="POST">
-                <input name="username" placeholder="Enter UserName" required/>
-                <input type="url" name="avatar" placeholder="Avatar url here" required/>
+                <input name="username" placeholder="Enter Username" required/>
+                <input type="url" name="avatar" placeholder="Avatar URL" required/>
                 <button type="submit" class="btn button">Create Account</button>
-                <button type="submit" class="btn cancel button" onclick="closeCreateUserForm()">Close</button>
+                <button type="submit" class="btn cancel button" onclick="closeCreateUserForm()">Cancel</button>
             </form>
+            <p class="signup-alert">{{signupMsg}}</p>
         </div>
-
+</center>
     
 
 </section>
-
+</div>
 
 <script>
     /*
@@ -38,3 +45,4 @@
     }
 
 </script>
+</body>

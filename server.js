@@ -6,6 +6,18 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const app = express()
 const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
+var loggedIndex = 1
+var BoardIndex = 1
+var user = null
+boards = []
+user = []
+var notStarted = []
+var inProgress = []
+var done = []
+var otherUsers = []
+var loginMsg ="";
+var signupMsg ="";
+
 
 
 const handlebars = expressHandlebars({
@@ -30,7 +42,7 @@ app.get('/', (req, res) => {
 /*-----------------------Login-Create Render----------------------*/
 app.get('/login-create', (req, res) => 
 {
-    res.render('login-create', {layout : 'mainlanding'});
+    res.render('login-create', {layout : 'mainlanding', loginMsg, signupMsg});
 })
 
   
@@ -54,6 +66,7 @@ app.post('/login', async (req, res) =>
         
         if(isFound == false)
         {
+            loginMsg = "Username is incorrect. Please try again or  sign up for an account" 
             res.redirect('/login-create');
         }
     
@@ -72,16 +85,28 @@ app.post('/signup', async (req, res) =>
         if(user.username == req.body.username)
         {
             isFound = true;
+            signupMsg = "Sorry, '"+ req.body.username + "' is already taken. Please try another username"
             res.redirect('/login-create');
         } 
     })
     
     if(isFound == false)
     {
+    signupMsg = "Welcome, "+ req.body.username + "! Your account has been created. Please Login"
     await User.create(req.body)
     }
 
     res.redirect('/login-create')
+})
+
+
+/*------------------------------logout----------------------------------- */ 
+app.get('/logout', async (req, res) => 
+{
+    loginMsg = "";
+    signupMsg = ""; 
+    loggedIndex = null;
+   res.redirect('/')
 })
 
 
