@@ -2,18 +2,23 @@
     {{board.title}}
 </h1>
 
+<h2>Collaborators:</h2>
 <section>
+        <div class="grid-container">
+
     {{#each users}}
-          <img src="{{this.avatar}}" alt="{{this.username}}" >
+          <div class="grid-item"><img class="avatar" src="{{this.avatar}}" alt="{{this.username}}" > {{this.username}}</div>
     {{/each}}
+              </div>
+
 </section>
 
 <section class="listContainer">
-    <div id="toDoList" class="list" >
+    <div id="toDoList" class="listToDo" >
     </div>
-    <div id="inProgressList" class="list" >
+    <div id="inProgressList" class="listInProgress" >
     </div>
-    <div id="doneList" class="list">
+    <div id="doneList" class="listDone">
     </div>
 </section>
 

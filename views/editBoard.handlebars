@@ -1,31 +1,31 @@
 <section class="editBoardPage" ondragover="event.preventDefault()" ondrop="openPopUp('deletePopUp')"> 
     <div>
         <h1>{{board.title}}</h1>
-        <button onclick="showSettings()">⚙️</button>
+        <button class="button" onclick="showSettings()"><span class="material-icons">settings</span></button>
         <div id="users"></div>
     </div>
     
     <section class="listContainer">
-        <div id="toDoList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
+        <div id="toDoList" class="listToDo" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
         </div>
-        <div id="inProgressList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
+        <div id="inProgressList" class="listInProgress" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
         </div>
-        <div id="doneList" class="list" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
+        <div id="doneList" class="listDone" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
         </div>
     </section>
 </section>
 
 <div id="deletePopUp" style="display: none;"> 
 <label>Would you like to delete this task?</label>
-<button onclick="deleteTask()">Yes</button>
-<button onclick="closePopUp('deletePopUp')">No</button>
+<button class="button" onclick="deleteTask()">Yes</button>
+<button class="button" onclick="closePopUp('deletePopUp')">No</button>
 </div>
 
 <div id="editTaskPopUp" style="display: none;">
 
 </div>
 
-<div id="settingsPopUp"> 
+<div class="form-popup" id="settingsPopUp"> 
 
 </div>
 
@@ -43,7 +43,7 @@
         otherUsers = await fetch('/otherUsers').then(res => res.json())
         document.getElementById("users").innerHTML = `
             <h1>Collaborators:</h1>
-            ${users.map(user => `<p>${user.username}</p>`).join("")}
+            ${users.map(user => `${user.username}`).join(", ")}
         `
     }
 
@@ -53,23 +53,23 @@
         done = await fetch('/done').then(res => res.json())
 
         document.getElementById("toDoList").innerHTML = `
-            <h1>To Do</h1>
+            <h4>To Do</h4>
             ${notStarted.map(task => showTask(task)).join("")}
             <aside class="task">
                 <div>
                     <form onsubmit="addTask(event, this)">
                         <input name="text" placeholder="Add Task" required/>
-                        <button>Add</button>
+                        <button class="button" class="button">Add</button>
                     <form>
                 </div>
             </aside>
         `
         document.getElementById("inProgressList").innerHTML = `
-            <h1>In Progress</h1>
+            <h4>In Progress</h4>
             ${inProgress.map(task => showTask(task)).join("")}
         `
         document.getElementById("doneList").innerHTML = `
-            <h1>Done</h1>
+            <h4>Done</h4>
             ${done.map(task => showTask(task)).join("")}
         `
     }
@@ -78,7 +78,7 @@
         <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
             <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
                 ${showTextAndAssignee(task)}
-                <button onclick="showEditTask(${task.id},'${task.text}')" >✏️</button>
+                <button class="button" onclick="showEditTask(${task.id},'${task.text}')" ><span class="material-icons">create</span></button>
             </div> 
             <br>
         </aside>
@@ -97,7 +97,7 @@
             return `<label>${task.text}</label>`
         }
         else {
-            return `<label>${task.text}</label> <img src="${assignee}" style="height:3rem;" > `
+            return `<label>${task.text}</label> <img class="avatar" src="${assignee}" style="height:3rem;" > `
         }
 
         
@@ -237,9 +237,9 @@
                 <select name="assignee">
                     ${users.map(user => `<option value=${user.id}>${user.username}</option>`).join("")}
                 </select> 
-                <button>Submit</button>
-                <button type="button" onclick="deleteTask()" >Delete</button>
-                <button type="button" onclick="closePopUp('editTaskPopUp')" >Cancel</button>
+                <button class="button">Submit</button>
+                <button class="button" onclick="deleteTask()" >Delete</button>
+                <button class="button" onclick="closePopUp('editTaskPopUp')" >Cancel</button>
             </form>
         `
     }
@@ -283,20 +283,22 @@
         openPopUp("settingsPopUp")
 
         document.getElementById("settingsPopUp").innerHTML = `
-            <form onsubmit="editBoard(event, this)"> 
+            <form onsubmit="editBoard(event, this)" class="form-container"> 
                 <label>Title:</label>
                 <input name="title" placeholder="{{board.title}}" value="{{board.title}}" />
                 <label>Add users:<label>
                 <select name="users" multiple="multiple">
                     ${otherUsers.map(user => `<option value=${user.id}>${user.username}</option>`).join("")}
                 </select> 
-                <button>Submit</button>
-                <button type="button" onclick="deleteBoard()">Delete</button>
-                <button type="button" onclick="closePopUp('settingsPopUp')">Cancel</button>
+                <button class="button">Submit</button>
+                <button class="button" onclick="deleteBoard()">Delete</button>
+                <button class="button" onclick="closePopUp('settingsPopUp')">Cancel</button>
             </form>
         `
 
     }
+
+
 
     async function editBoard(event, form) {
         event.preventDefault()
