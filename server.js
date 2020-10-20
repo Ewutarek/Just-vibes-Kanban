@@ -105,6 +105,13 @@ app.post('/signup', async (req, res) =>
 })
 
 
+/*------------------------------logout----------------------------------- */ 
+app.get('/logout', async (req, res) => 
+{
+    loggedIndex = null;
+   res.redirect('/')
+})
+
 
 /*---------------------All Boards (Explore)-----------------------*/
 app.get('/explore', async (req, res) => 
@@ -431,10 +438,12 @@ app.post('/editTask', async (req,res) => {
     else {
         task = done[index3]
         await task.update({text: text, UserId: asignee})
+
     }
 
     res.send()
 })
+
 
 //edit board 
 
