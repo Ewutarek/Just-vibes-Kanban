@@ -7,6 +7,7 @@ const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
 var loggedIndex = 1
 var BoardIndex = 1
+var user = null
 boards = []
 user = []
 var notStarted = []
@@ -18,9 +19,18 @@ var otherUsers = []
 const handlebars = expressHandlebars({
     handlebars: allowInsecurePrototypeAccess(Handlebars),
     helpers: { 
-        exportBoards() {
+        exportBoards:() => {
             //finds all a users boards 
             return (boards)
+        },
+        getLoggedUser: function(){
+            return (user.username)
+
+        },
+        getLoggedAvatar: function(){
+            var avatar = user.avatar
+            return (avatar)
+
         }
     },
     partialsDir: __dirname + '/views/partials/'
@@ -51,13 +61,13 @@ app.post('/login', async (req, res) =>
     console.log(req.body);
     const users = await User.findAll();
     let isFound = false;
-    users.forEach(user => 
+    users.forEach((_user, index) => 
         {
-            if(user.username == req.body.username)
+            if(_user.username == req.body.username)
             {
                 isFound = true;
-                loggedIndex = user.id;
-                console.log(loggedIndex);
+                loggedIndex = _user.id;
+                user = _user
                 res.redirect('/myBoards')
             } 
         })
