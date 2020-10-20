@@ -188,3 +188,31 @@ a:link, a:visited, a:active {
 a:hover {
   color: #ebd5c6;
 }
+
+/*styling editBoard page*/
+
+.editBoardPage {
+  padding: 8rem;
+}
+
+/*styling lists*/
+
+.listContainer {
+  width: 80rem;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-row: auto;
+}
+
+.list {
+  background-color: #ce796b;
+  text-align: center;
+  min-height: 20rem;
+  width: 20rem;
+  padding: 2rem;
+}
+
+.list div{
+  background-color: white;
+  padding: 0.5rem;
+}
