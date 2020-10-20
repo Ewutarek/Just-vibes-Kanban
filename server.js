@@ -6,18 +6,8 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const app = express()
 const {User, Task, Board, AdminTable, sequelize, Op} = require('./models')
 const e = require('express')
-var loggedIndex = 1
-var BoardIndex = 1
-var user = null
-boards = []
-user = []
-var notStarted = []
-var inProgress = []
-var done = []
-var otherUsers = []
 var loginMsg ="";
 var signupMsg ="";
-
 
 
 const handlebars = expressHandlebars({

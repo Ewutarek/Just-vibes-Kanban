@@ -1,51 +1,58 @@
-
-<h1>My Boards:</h1>
-<!---Displays all the users boards--->
-<section>
-    {{#each boards}}
-         <article> 
+<header>
+    {{>navbar thisSession}}
+</header>
+<content>
+    <h1>My Boards:</h1>
+    <!---Displays all the users boards--->
+    <section>
+        {{#each boards}}
+        <article>
             <div class="container">
-            <div class="card">
-               <div class="image" style="background-image: url('{{this.image}}');"></div>
-                <div class="middle">
-             <div class="text"><h3><a class="board" href="/editBoard/{{this.id}}">{{this.title}}</a></h3></div>
-              </div>
-             </div>
-             </div>
+                <div class="card">
+                    <div class="image" style="background-image: url('{{this.image}}');"></div>
+                    <div class="middle">
+                        <div class="text">
+                            <h3><a class="board" href="/editBoard/{{this.id}}">{{this.title}}</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </article>
-    {{/each}}
-    <article onclick="openForm()">
-        <center><button class="button">+</button></center>
-    </article>
-</section>
+        {{/each}}
+        <article onclick="openForm()">
+            <center><button class="button">+</button></center>
+        </article>
+    </section>
 
-<!---Create new board form--->
+    <!---Create new board form--->
 
-<div id="myForm" style="display: none;">
-  <form action="/myBoards" method="POST">
-      <label>Title:</label>
-      <input type="text" name="title" required/>
-      <label>Background image:</label>
-      <input type="text" name="image" required/>
-      <select name="users" multiple="multiple">
-            {{#each users}}
+    <div id="myForm" style="display: none;">
+        <form action="/myBoards" method="POST">
+            <label>Title:</label>
+            <input type="text" name="title" required />
+            <label>Background image:</label>
+            <input type="text" name="image" required />
+            <select name="users" multiple="multiple">
+                {{#each users}}
                 <option value={{this.id}}>{{this.username}}</option>
-            {{/each}}
-      </select>
-      
-      <button class="button" type="submit">Add</button>
-      <button class="button" type="button" onclick="closeForm()">Cancel</button>
-  </form>
-</div>
+                {{/each}}
+            </select>
 
-<!---Javascript handles form popping up--->
+            <button class="button" type="submit">Add</button>
+            <button class="button" type="button" onclick="closeForm()">Cancel</button>
+        </form>
+    </div>
 
-<script> 
-    function openForm() {
-        document.getElementById("myForm").style.display = "block";
-    }
+    <!---Javascript handles form popping up--->
 
-    function closeForm() {
-        document.getElementById("myForm").style.display = "none";
-    }
-</script>
+    <script>
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+    </script>
+
+</content>

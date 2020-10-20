@@ -1,33 +1,51 @@
-<section class="editBoardPage" ondragover="event.preventDefault()" ondrop="openPopUp('deletePopUp')"> 
-    <div>
-        <h1>{{board.title}}</h1>
-        <button class="button" onclick="showSettings()"><span class="material-icons">settings</span></button>
-        <div id="users"></div>
-    </div>
+<header>
+    {{>navbar thisSession}}
+</header>
+
+<style>
+   body.board {
+        background-image: url("{{board.image}}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+<body class="board">
+<content>
+    <section class="editBoardPage" ondragover="event.preventDefault()" ondrop="openPopUp('deletePopUp')"> 
+        <div>
+            <h1>{{board.title}}</h1>
+            <button class="button" onclick="showSettings()"><span class="material-icons">settings</span></button>
+            <div id="users"></div>
+        </div>
     
-    <section class="listContainer">
-        <div id="toDoList" class="listToDo" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
-        </div>
-        <div id="inProgressList" class="listInProgress" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
-        </div>
-        <div id="doneList" class="listDone" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
-        </div>
+        <section class="listContainer">
+            <div id="toDoList" class="listToDo" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
+            </div>
+            <div id="inProgressList" class="listInProgress" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
+            </div>
+            <div id="doneList" class="listDone" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
+            </div>
+        </section>
     </section>
-</section>
 
-<div id="deletePopUp" style="display: none;"> 
-<label>Would you like to delete this task?</label>
-<button class="button" onclick="deleteTask()">Yes</button>
-<button class="button" onclick="closePopUp('deletePopUp')">No</button>
-</div>
+    <div id="deletePopUp" style="display: none;"> 
+        <label>Would you like to delete this task?</label>
+        <button class="button" onclick="deleteTask()">Yes</button>
+        <button class="button" onclick="closePopUp('deletePopUp')">No</button>
+    </div>
 
-<div id="editTaskPopUp" style="display: none;">
+    <div id="editTaskPopUp" style="display: none;">
 
-</div>
+    </div>
 
-<div class="form-popup" id="settingsPopUp"> 
+    <div class="form-popup" id="settingsPopUp"> 
 
-</div>
+    </div>
+</content>
+</body>
+
 
 
 <script>

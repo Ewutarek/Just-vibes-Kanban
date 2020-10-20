@@ -1,12 +1,8 @@
  <button class="userbutton">
     
-        <img class="avatar" src="{{#getLoggedAvatar}}
-            {{avatar}}
-        {{/getLoggedAvatar}}">
+        <img class="avatar" src="{{this.avatar}}">
         Hello
-        {{#getLoggedUser}}
-            {{object}}
-        {{/getLoggedUser}}
-        </button>
+        {{this.username}}
+</button>
                 
 

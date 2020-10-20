@@ -1,20 +1,12 @@
+ {{>user this.user}}
+ <nav>
+    <div id="logo"><a href="/myBoards">Just Vibes</a></div>
 
-<div class="dropdown">
-        <a href="/myBoards">My Boards</a>
-         <div class="dropDownContent"> 
-                {{#each (exportBoards)}}
-                    <a href='/editBoard/{{this.id}}'>
-                        <p>{{this.title}}</p>
-                    </a>
-                {{/each}}
-            </div> 
-    </div>
+    <a href="/myBoards">My Boards</a>
+    <a href="/explore">Explore</a>
+    <a href="/logout">Log out</a>
+</nav>
+  
+    
 
-        <a href="/explore">Explore</a>
-        
-                <a href="/logout">Log out</a>
 
-        <img class="avatar" src="{{#getLoggedAvatar}}
-            {{avatar}}
-        {{/getLoggedAvatar}}">
-                <a href="/logout">Log out</a>

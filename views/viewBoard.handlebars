@@ -1,35 +1,41 @@
-<h1> 
-    {{board.title}}
-</h1>
+<header>
+    {{>navbar thisSession}}
+</header>
 
-<h2>Collaborators:</h2>
-<section>
+<content>
+    <h1>
+        {{board.title}}
+    </h1>
+
+    <h2>Collaborators:</h2>
+    <section>
         <div class="grid-container">
 
-    {{#each users}}
-          <div class="grid-item"><img class="avatar" src="{{this.avatar}}" alt="{{this.username}}" > {{this.username}}</div>
-    {{/each}}
-              </div>
+            {{#each users}}
+            <div class="grid-item"><img class="avatar" src="{{this.avatar}}" alt="{{this.username}}"> {{this.username}}
+            </div>
+            {{/each}}
+        </div>
 
-</section>
+    </section>
 
-<section class="listContainer">
-    <div id="toDoList" class="listToDo" >
-    </div>
-    <div id="inProgressList" class="listInProgress" >
-    </div>
-    <div id="doneList" class="listDone">
-    </div>
-</section>
+    <section class="listContainer">
+        <div id="toDoList" class="listToDo">
+        </div>
+        <div id="inProgressList" class="listInProgress">
+        </div>
+        <div id="doneList" class="listDone">
+        </div>
+    </section>
 
 
-<script>
-   async function showLists() {
-        notStarted = await fetch('/notStarted').then(res => res.json());
-        inProgress = await fetch('/inProgress').then(res => res.json());
-        done = await fetch('/done').then(res => res.json());
-        
-        document.getElementById("toDoList").innerHTML = `
+    <script>
+        async function showLists() {
+            notStarted = await fetch('/notStarted').then(res => res.json());
+            inProgress = await fetch('/inProgress').then(res => res.json());
+            done = await fetch('/done').then(res => res.json());
+
+            document.getElementById("toDoList").innerHTML = `
             <h1>To Do</h1>
             ${notStarted.map(task => showTask(task)).join("")}
             <aside class="task">
@@ -37,25 +43,27 @@
                 </div>
             </aside>
         `
-        document.getElementById("inProgressList").innerHTML = `
+            document.getElementById("inProgressList").innerHTML = `
             <h1>In Progress</h1>
             ${inProgress.map(task => showTask(task)).join("")}
         `
-        document.getElementById("doneList").innerHTML = `
+            document.getElementById("doneList").innerHTML = `
             <h1>Done</h1>
             ${done.map(task => showTask(task)).join("")}
         `
-    }
-    showTask = (task => `
+        }
+        showTask = (task => `
         <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
             <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
                 <label>${task.text}</label>
             </div>
             <br>
         </aside>
-    `) 
+    `)
 
-    showLists();
+        showLists();
 
-</script>
+    </script>
 
+
+</content>
