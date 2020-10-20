@@ -45,13 +45,13 @@ app.use(express.json())
 /*---------------------------landing page---------------------------*/
 
 app.get('/', (req, res) => {
-    res.render('landing', {layout : 'main'});
+    res.render('landing', {layout : 'mainlanding'});
     })
 
 /*-----------------------Login-Create Render----------------------*/
 app.get('/login-create', (req, res) => 
 {
-    res.render('login-create', {layout : 'main'});
+    res.render('login-create', {layout : 'mainlanding'});
 })
 
   
