@@ -4,14 +4,13 @@
 
 <section>
 
-    <form class="login button" action="/login" method="POST">
-         <label for="username">Username:</label>
+    <form class="login" action="/login" method="POST">
          <input name="username" placeholder="Enter Username" required/>
-         <button>Login</button>
+         <button class="button">Login</button>
     </form>
 
     {{!-- Pop-Up Create Account form --}}
-         <button class="open-button button" onclick="openCreateUserForm()">Sign Up</button>
+         <button class="open-button button" onclick="openCreateUserForm()">Sign Up Here</button>
         <div class="form-popup" id="create-user">
             <form class="form-container" onsubmit="formValidation()" action="/signup" method="POST">
                 <input name="username" placeholder="Enter UserName" required/>

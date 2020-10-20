@@ -438,10 +438,12 @@ app.post('/editTask', async (req,res) => {
     else {
         task = done[index3]
         await task.update({text: text, UserId: asignee})
+
     }
 
     res.send()
 })
+
 
 //edit board 
 
