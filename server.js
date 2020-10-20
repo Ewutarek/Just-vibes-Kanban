@@ -235,8 +235,7 @@ getUsers = async (BoardIndex) =>
 }
 
 //edit board page 
-
-
+var otherUsers = []
 
 app.get('/editBoard/:id', async (request, response) => {
     const board = await Board.findByPk(request.params.id, {
@@ -266,15 +265,35 @@ app.get('/editBoard/:id', async (request, response) => {
 
     
     getUsers(request.params.id)
+    getOtherUsers(request.params.id)
     
     response.render('editBoard', {board})
 })
 
+getOtherUsers = async (BoardIndex) =>
+{
+    const allUsers = await User.findAll()
+    const adminTables = await AdminTable.findAll()
 
+    adminTables.forEach(row => {
+        if (row.BoardId == BoardIndex) {
+            index = allUsers.findIndex(user => user.id == row.UserId)
+            allUsers.splice(index,1)
+        }
+    })
+    
+    otherUsers = allUsers
+      
+}
 
 app.get('/users', (req, res) => {
     res.send(users)
 })
+
+app.get('/otherUsers', (req,res) => {
+    res.send(otherUsers)
+})
+
 
 app.get('/notStarted', (req, res) => {
     res.send(notStarted)
@@ -426,19 +445,66 @@ app.post('/editTask', async (req,res) => {
     const index3 = req.body[2]
     const list = req.body[3]
     const text = req.body[4]
+    const asignee = req.body[5]
 
     if (list == -1) {
         task = notStarted[index1]
-        await task.update({text: text})
+        await task.update({text: text, UserId: asignee})
     }
     else if (list == 0) {
         task = inProgress[index2]
-        await task.update({text: text})
+        await task.update({text: text, UserId: asignee})
     }
     else {
         task = done[index3]
-        await task.update({text: text})
+        await task.update({text: text, UserId: asignee})
     }
+
+    res.send()
+})
+
+//edit board 
+
+app.post('/editBoard', async (req,res) => {
+    const id = req.body[0]
+    const title = req.body[1]
+    const users= req.body[2]
+    
+    const board = await Board.findByPk(id)
+
+    await board.update({title: title})
+
+    if (users == null) {
+        //do nothing
+    }
+    else if (users.length == 1) {
+        await AdminTable.create({UserId: users, BoardId: id})
+    }
+    else {
+        users.forEach(async (user) => {
+        await AdminTable.create({UserId: user, BoardId: id})
+        })
+    }
+
+    res.send()
+})
+
+//delete board
+
+app.post('/deleteBoard',async (req,res) => {
+    const id = req.body[0]
+
+    board = await Board.findByPk(id)
+    adminTables = await AdminTable.findAll({
+        where: {
+            BoardId: id
+        }
+    })
+    
+    
+    await Promise.all(adminTables.map(row => row.destroy()))
+    await board.destroy()
+    
 
     res.send()
 })

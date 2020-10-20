@@ -1,7 +1,7 @@
 <section class="editBoardPage" ondragover="event.preventDefault()" ondrop="openPopUp('deletePopUp')"> 
     <div>
         <h1>{{board.title}}</h1>
-        <button>⚙️</button>
+        <button onclick="showSettings()">⚙️</button>
         <div id="users"></div>
     </div>
     
@@ -25,16 +25,22 @@
 
 </div>
 
+<div id="settingsPopUp"> 
+
+</div>
+
 
 <script>
     var notStarted = []
     var inProgress = []
     var done = []
     var users = []
+    var otherUsers = []
     var taskId = null
 
     async function showUsers() {
         users = await fetch('/users').then(res => res.json())
+        otherUsers = await fetch('/otherUsers').then(res => res.json())
         document.getElementById("users").innerHTML = `
             <h1>Collaborators:</h1>
             ${users.map(user => `<p>${user.username}</p>`).join("")}
@@ -71,12 +77,31 @@
     showTask = (task => `
         <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
             <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
-                <label>${task.text}-${task.UserId}</label>
+                ${showTextAndAssignee(task)}
                 <button onclick="showEditTask(${task.id},'${task.text}')" >✏️</button>
             </div> 
             <br>
         </aside>
     `)
+
+    function showTextAndAssignee (task) {
+        var assignee= "unassigned"
+        
+        users.forEach(user => {
+            if (user.id == task.UserId) {
+                assignee = user.avatar
+            }
+        })
+
+        if (assignee == "unassigned") {
+            return `<label>${task.text}</label>`
+        }
+        else {
+            return `<label>${task.text}</label> <img src="${assignee}" style="height:3rem;" > `
+        }
+
+        
+    }
 
     function onDragStart(event) {
         taskId = event.target.id
@@ -130,7 +155,7 @@
             body: JSON.stringify([index1,index2,index3,listOut, listIn])
         }
 
-        await fetch('/reorderTasks', postRequest)
+        await fetch('/moveTask', postRequest)
 
         showLists()
     }
@@ -207,11 +232,11 @@
         document.getElementById("editTaskPopUp").innerHTML = `
             <form onsubmit="editTask(event, this)"> 
                 <label>Text:</label>
-                <input name="text" placeholder="${text}" />
+                <input name="text" placeholder="${text}" value="${text}" />
                 <label>Assigned to:<label>
-                <select name="users">
+                <select name="assignee">
                     ${users.map(user => `<option value=${user.id}>${user.username}</option>`).join("")}
-                <select> 
+                </select> 
                 <button>Submit</button>
                 <button type="button" onclick="deleteTask()" >Delete</button>
                 <button type="button" onclick="closePopUp('editTaskPopUp')" >Cancel</button>
@@ -225,6 +250,7 @@
         const data = new FormData(form)
         const id = taskId
         const text = data.get("text")
+        const assignee = data.get("assignee")
 
         const index1 = notStarted.findIndex(task => task.id == id)
         const index2 = inProgress.findIndex(task => task.id == id)
@@ -245,12 +271,66 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify([index1,index2,index3,list,text])
+            body: JSON.stringify([index1,index2,index3,list,text,assignee])
         }
 
         await fetch('/editTask', postRequest)
         closePopUp("editTaskPopUp")
         showLists()
+    }
+
+    function showSettings() {
+        openPopUp("settingsPopUp")
+
+        document.getElementById("settingsPopUp").innerHTML = `
+            <form onsubmit="editBoard(event, this)"> 
+                <label>Title:</label>
+                <input name="title" placeholder="{{board.title}}" value="{{board.title}}" />
+                <label>Add users:<label>
+                <select name="users" multiple="multiple">
+                    ${otherUsers.map(user => `<option value=${user.id}>${user.username}</option>`).join("")}
+                </select> 
+                <button>Submit</button>
+                <button type="button" onclick="deleteBoard()">Delete</button>
+                <button type="button" onclick="closePopUp('settingsPopUp')">Cancel</button>
+            </form>
+        `
+
+    }
+
+    async function editBoard(event, form) {
+        event.preventDefault()
+
+        const data = new FormData(form)
+        const id = {{board.id}}
+        const title = data.get("title")
+        const users = data.getAll("users")
+
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([id, title, users])
+        }
+
+        await fetch('/editBoard', postRequest)
+        location.reload()
+    }
+
+    async function deleteBoard() {
+        id = {{board.id}}
+
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([id])
+        }
+
+        await fetch('/deleteBoard',postRequest)
+        window.location.href = '/myBoards'
     }
 
     function openPopUp(popUpId) {

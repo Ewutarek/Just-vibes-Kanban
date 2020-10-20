@@ -6,10 +6,12 @@
 
 <section>
     {{#each boards}}
-        <article> 
-            <main>{{this.title}}</main>
-            <img src="{{this.image}}"/>
-        </article>
+        <a href="/editBoard/{{this.id}}">
+            <article> 
+                <main>{{this.title}}</main>
+                <img src="{{this.image}}"/>
+            </article>
+        </a>
     {{/each}}
     <article onclick="openForm()">
         <main>+</main>
