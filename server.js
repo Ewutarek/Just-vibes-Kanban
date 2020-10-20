@@ -12,6 +12,7 @@ user = []
 var notStarted = []
 var inProgress = []
 var done = []
+var otherUsers = []
 
 
 const handlebars = expressHandlebars({
@@ -103,7 +104,7 @@ app.get('/explore', async (req, res) =>
 })
 
 /*---------------------one Board (viewBoard)-----------------------*/ 
-getUsers = async () =>
+getUsers = async (BoardIndex) =>
 {
     const admin = await AdminTable.findAll({
         where: {
@@ -114,7 +115,7 @@ getUsers = async () =>
     users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
 }
 
-app.get('/explore/:id', async (req, res) => 
+app.get('/viewBoard/:id', async (req, res) => 
 {
     const board = await Board.findByPk(req.params.id).catch(console.error)
     BoardIndex = board.id;
@@ -122,7 +123,7 @@ app.get('/explore/:id', async (req, res) =>
     const admin = await AdminTable.findAll()
     // const users = await User.findAll()
 
-    await getUsers();
+    await getUsers(req.params.id);
 
     res.render('viewBoard', {board, users});
 })
@@ -188,41 +189,8 @@ app.post('/myBoards', async (req, res) => {
 })
 
 
-/*------------------------------------------viewBoard------------------------------------------*/
 
-app.get('/explore/:id', async (request, response) => {
-    const board = await Board.findByPk(request.params.id, {
-        include: [{model: Task, as: 'tasks'}],
-    })
-
-    board.tasks.sort(function(a, b){
-        return a.priority-b.priority
-    })
-
-    notStarted = []
-    inProgress = []
-    done = []
-    
-    board.tasks.forEach(task => {
-        if (task.status == -1) {
-            notStarted.push(task)
-        } 
-        else if (task.status == 0) {
-            inProgress.push(task)
-        } 
-
-        else {
-            done.push(task)
-        }
-    })
-
-    response.render('explore', {board})
-
- })
-   
-
-
-//get a boards users
+/*--------------------------------get a boards users----------------------------------*/
 
 getUsers = async (BoardIndex) =>
 {
@@ -234,8 +202,8 @@ getUsers = async (BoardIndex) =>
     users = await Promise.all(admin.map(admin => User.findByPk(admin.UserId)))
 }
 
-//edit board page 
-var otherUsers = []
+
+/*-----------------------------------edit board page ----------------------------*/
 
 app.get('/editBoard/:id', async (request, response) => {
     const board = await Board.findByPk(request.params.id, {
@@ -307,16 +275,15 @@ app.get('/done', (req, res) => {
     res.send(done)
 })
 
-//add task
 
+/*-------------------------------------add task-----------------------------------*/
 app.post('/editBoard/:id/addTask', async (req,res) => {
     task = await Task.create({text: req.body.text, BoardId: req.params.id, status: -1, priority: notStarted.length})
     notStarted.push(task)
     res.send()
 })
 
-//move task 
-
+/*--------------------------------move task --------------------------------*/
 app.post('/moveTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -354,8 +321,7 @@ app.post('/moveTask', async (req,res) => {
     res.send()
 })
 
-//delete task 
-
+/*-----------------------------delete task--------------------------*/
 app.post('/deleteTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -379,8 +345,7 @@ app.post('/deleteTask', async (req,res) => {
     res.send()
 })
 
-//redorder tasks
-
+/*-----------------------------------redorder tasks--------------------------------*/
 app.post('/reorderTasks', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
@@ -437,8 +402,7 @@ app.post('/reorderTasks', async (req,res) => {
     res.send()
 })
 
-//edit task 
-
+/*----------------------------------edit task ---------------------------*/
 app.post('/editTask', async (req,res) => {
     const index1 = req.body[0]
     const index2 = req.body[1]
