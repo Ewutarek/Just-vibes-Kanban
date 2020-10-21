@@ -12,8 +12,13 @@ body.board {
     {{board.title}}
 </h1>
 
-<h2>Collaborators:</h2>
-<section>
+<content>
+    <h1>
+        {{board.title}}
+    </h1>
+
+    <h2>Collaborators:</h2>
+    <section>
         <div class="grid-container">
 
     {{#each users}}
@@ -41,6 +46,7 @@ body.board {
         
         document.getElementById("toDoList").innerHTML = `
             <h4>To Do</h4>
+
             ${notStarted.map(task => showTask(task)).join("")}
             <aside class="task">
                
@@ -52,19 +58,22 @@ body.board {
         `
         document.getElementById("doneList").innerHTML = `
             <h4>Done</h4>
+
             ${done.map(task => showTask(task)).join("")}
         `
-    }
-    showTask = (task => `
+        }
+        showTask = (task => `
         <aside class="task" ondragover="event.preventDefault()" ondrop="reorderTasks(event, ${task.status}, ${task.priority})">
             <div id=${task.id} draggable="true" ondragstart="onDragStart(event)">
                 <label>${task.text}</label>
             </div>
             <br>
         </aside>
-    `) 
+    `)
 
-    showLists();
+        showLists();
 
-</script>
+    </script>
 
+
+</content>

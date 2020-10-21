@@ -21,9 +21,18 @@ body.board {
         <div id="inProgressList" class="listInProgress" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
         </div>
         <div id="doneList" class="listDone" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
+
         </div>
+    
+        <section class="listContainer">
+            <div id="toDoList" class="listToDo" ondragover="event.preventDefault()" ondrop="moveTask(event, -1)">
+            </div>
+            <div id="inProgressList" class="listInProgress" ondragover="event.preventDefault()" ondrop="moveTask(event, 0)">    
+            </div>
+            <div id="doneList" class="listDone" ondragover="event.preventDefault()" ondrop="moveTask(event, 1)">
+            </div>
+        </section>
     </section>
-</section>
 
 
 <div class="editform-popup" id="deletePopUp" style="display: none;"> 
@@ -37,6 +46,7 @@ body.board {
 
 <div class="editform-popup" id="settingsPopUp"> 
 </div>
+
 
 <script>
     var notStarted = []
