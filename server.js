@@ -492,6 +492,7 @@ app.post('/editBoard', async (req,res) => {
     
     const board = await Board.findByPk(id)
 
+
     await board.update({title: title})
 
     if (users == null) {
