@@ -125,6 +125,7 @@ h3 {
   font-size: 30px;
 }
 
+/*to do list header */
 h4 {
   font-family: 'Montserrat';
   text-transform: capitalize;
@@ -158,6 +159,12 @@ h5 {
   width: 90%;
   padding: 20px;
   text-align: center;
+}
+
+/* edit boards page opacity*/
+.bg-opacity {
+  background-color: rgb(255, 255, 255); /* Fallback color */
+  background-color: rgba(255, 255, 255, 0.4); /* Black w/opacity/see-through */
 }
 
 .avatar {
@@ -202,6 +209,20 @@ h5 {
   text-transform: capitalize;  
 }
 
+button, input[type="button"], input[type="submit"] { 
+  display: inline-block;
+  border: none;
+  outline: 0;
+  padding: 20px;
+  color: #ffffff;
+  background-color: #ce796b;
+  border-radius: 25px;
+  text-align: center;
+  cursor: pointer;
+  max-width: 200px;
+  font-size: 1vw;
+  text-transform: capitalize;  
+}
 
 .landingbutton:hover {
   color: #ebd5c6;
@@ -335,6 +356,8 @@ a.board:link, a.board:visited, a.board:hover  {
   width: 20rem;
   padding: 2rem;
 }
+
+/* list divs */
 .listToDo div{
   background-color: white;
   border-radius: 20px;
@@ -350,13 +373,15 @@ a.board:link, a.board:visited, a.board:hover  {
   border-radius: 20px;
   padding: 0.5rem;
 }
+
 /* user avatar display */
 .grid-container {
   display: inline-grid;
   grid-template-columns: auto auto auto;
   width: 30%;
-  background-color: #ffffff;
   padding: 10px;
+  grid-gap: 10px;
+
 }
 
 .grid-item {
@@ -369,37 +394,16 @@ a.board:link, a.board:visited, a.board:hover  {
   text-align: center;
 }
 
-/*  pop up */
-
-
 /* The popup form - hidden by default */
-.form-popup {
+.editform-popup {
   display: none;
   position: fixed;
-  bottom: 0;
-  right: 15px;
+  top: 50%;
+  left: 50%;
+  margin-top: -5em; 
+  margin-left: -8em;
   border: 3px solid #f1f1f1;
-  z-index: 9;
-}
-
-/* Add styles to the form container */
-.form-container {
-  max-width: 300px;
-  padding: 10px;
   background-color: white;
-}
-
-/* Full-width input fields */
-.form-container input[type=text], .form-container input[type=password] {
-  width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
-}
-
-/* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
-  background-color: #ddd;
-  outline: none;
+  padding: 10px;
+  z-index: 9;
 }
