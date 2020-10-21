@@ -1,18 +1,20 @@
-
 <h1>My Boards:</h1>
-
-
 <!---Displays all the users boards--->
-
 <section>
     {{#each boards}}
-        <article> 
-            <main>{{this.title}}</main>
-            <img src="{{this.image}}"/>
+         <article> 
+            <div class="container">
+            <div class="card">
+               <div class="image" style="background-image: url('{{this.image}}');"></div>
+                <div class="middle">
+             <div class="text"><h3><a class="board" href="/editBoard/{{this.id}}">{{this.title}}</a></h3></div>
+              </div>
+             </div>
+             </div>
         </article>
     {{/each}}
     <article onclick="openForm()">
-        <main>+</main>
+        <center><button class="button">+</button></center>
     </article>
 </section>
 
@@ -30,8 +32,8 @@
             {{/each}}
       </select>
       
-      <button type="submit">Add</button>
-      <button type="button" onclick="closeForm()">Cancel</button>
+      <button class="button" type="submit">Add</button>
+      <button class="button" type="button" onclick="closeForm()">Cancel</button>
   </form>
 </div>
 
@@ -41,7 +43,6 @@
     function openForm() {
         document.getElementById("myForm").style.display = "block";
     }
-
     function closeForm() {
         document.getElementById("myForm").style.display = "none";
     }

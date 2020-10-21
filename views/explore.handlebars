@@ -5,11 +5,15 @@
 
 <section>
     {{#each boards}}
-    <a href="viewBoard/{{this.id}}">
          <article> 
-            <main>{{this.title}}</main>
-            <img src="{{this.image}}" style="width:90px; height:90px;"/>
+            <div class="container">
+            <div class="card">
+               <div class="image" style="background-image: url('{{this.image}}');"></div>
+                <div class="middle">
+             <div class="text"><h3><a class="board" href="/viewBoard/{{this.id}}">{{this.title}}</a></h3></div>
+              </div>
+             </div>
+             </div>
         </article>
-    </a>
     {{/each}}
 </section>

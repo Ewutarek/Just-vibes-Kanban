@@ -1,22 +1,37 @@
+<style>
+body.board {
+  background-image: url("{{board.image}}");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+</style>
+<div class="bg-opacity">
 <h1> 
     {{board.title}}
 </h1>
 
+<h2>Collaborators:</h2>
 <section>
+        <div class="grid-container">
+
     {{#each users}}
-          <img src="{{this.avatar}}" alt="{{this.username}}" >
+          <div class="grid-item"><img class="avatar" src="{{this.avatar}}" alt="{{this.username}}" > {{this.username}}</div>
     {{/each}}
+              </div>
+
 </section>
 
 <section class="listContainer">
-    <div id="toDoList" class="list" >
+    <div id="toDoList" class="listToDo" >
     </div>
-    <div id="inProgressList" class="list" >
+    <div id="inProgressList" class="listInProgress" >
     </div>
-    <div id="doneList" class="list">
+    <div id="doneList" class="listDone">
     </div>
 </section>
-
+</div>
 
 <script>
    async function showLists() {
@@ -25,19 +40,18 @@
         done = await fetch('/done').then(res => res.json());
         
         document.getElementById("toDoList").innerHTML = `
-            <h1>To Do</h1>
+            <h4>To Do</h4>
             ${notStarted.map(task => showTask(task)).join("")}
             <aside class="task">
-                <div>
-                </div>
+               
             </aside>
         `
         document.getElementById("inProgressList").innerHTML = `
-            <h1>In Progress</h1>
+            <h4>In Progress</h4>
             ${inProgress.map(task => showTask(task)).join("")}
         `
         document.getElementById("doneList").innerHTML = `
-            <h1>Done</h1>
+            <h4>Done</h4>
             ${done.map(task => showTask(task)).join("")}
         `
     }
