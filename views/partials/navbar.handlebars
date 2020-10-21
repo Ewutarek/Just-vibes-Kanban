@@ -1,0 +1,14 @@
+<div class="dropdown">
+        <a href="/myBoards">My Boards</a>
+         <div class="dropDownContent"> 
+                {{#each (exportBoards)}}
+                    <a href='/editBoard/{{this.id}}'>
+                        <p>{{this.title}}</p>
+                    </a>
+                {{/each}}
+            </div> 
+    </div>
+
+        <a href="/explore">Explore</a>
+        
+                <a href="/logout">Log out</a>
